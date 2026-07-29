@@ -41,7 +41,7 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 ## How to Start Termux Desktop Mode
 <pre><code>start-x11.sh
 </code></pre>
-<p>This starts Termux-X11, sets up audio, and launches XFCE with the Fluent theme.</p>
+<p>This starts Termux-X11, sets up audio, and launches XFCE with the Fluent theme. Requires the <a href="https://play.google.com/store/apps/details?id=com.termux.x11">Termux-X11</a> app installed on your Android device.</p>
 
 <p>Pre-installed apps: <strong>Firefox</strong>, <strong>galculator</strong>, <strong>parole</strong>, <strong>gpicview</strong>.</p>
 
