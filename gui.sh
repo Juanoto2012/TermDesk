@@ -48,6 +48,9 @@ pkg install cava -y
 pkg install pulseaudio -y
 pkg install netsurf -y
 pkg install xfce4-terminal -y
+pkg install galculator -y
+pkg install parole -y
+pkg install gpicview -y
 apt install xfce4-settings -y
 
 printf " \e[32;1m[+] Installing Fluent Theme ... \e[0m\n"

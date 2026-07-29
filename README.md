@@ -44,6 +44,7 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 <li>Run <code>export DISPLAY=:1</code> to set the display environment variable.</li>
 <li>Run <code>startxfce4 &amp;</code> to start the XFCE desktop.</li>
 <li>Firefox is pre-installed — open it from the XFCE menu to browse the web.</li>
+<li>Pre-installed apps: <strong>galculator</strong> (calculator), <strong>parole</strong> (media player), <strong>gpicview</strong> (image viewer).</li>
 <li>X11 provides hardware acceleration and better performance compared to VNC.</li>
 </ol>
 
