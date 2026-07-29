@@ -98,6 +98,102 @@ copy_wallpapers() {
     echo "[+] Wallpapers copied to $WALLPAPER_DIR"
 }
 
+apply_modern_theme() {
+    echo "[+] Applying modern XFCE theme configuration..."
+    mkdir -p "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml"
+
+    cat > "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml" << 'XSEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="Fluent"/>
+    <property name="IconThemeName" type="string" value="Mint-Y"/>
+  </property>
+  <property name="Xft" type="empty">
+    <property name="DPI" type="int" value="96"/>
+    <property name="Antialias" type="int" value="1"/>
+    <property name="Hinting" type="int" value="1"/>
+    <property name="HintStyle" type="string" value="hintslight"/>
+    <property name="RGBA" type="string" value="rgb"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="FontName" type="string" value="Sans 11"/>
+    <property name="MonospaceFontName" type="string" value="Monospace 10"/>
+    <property name="DecorationLayout" type="string" value="menu:minimize,maximize,close"/>
+    <property name="MenuImages" type="bool" value="true"/>
+    <property name="ButtonImages" type="bool" value="true"/>
+  </property>
+</channel>
+XSEOF
+
+    cat > "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml" << 'XWEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="Default-xhdpi"/>
+    <property name="title_font" type="string" value="Sans Bold 10"/>
+    <property name="use_compositing" type="bool" value="true"/>
+    <property name="frame_opacity" type="int" value="95"/>
+    <property name="inactive_opacity" type="int" value="90"/>
+    <property name="popup_opacity" type="int" value="95"/>
+    <property name="show_frame_shadow" type="bool" value="true"/>
+    <property name="show_popup_shadow" type="bool" value="true"/>
+    <property name="shadow_opacity" type="int" value="50"/>
+    <property name="button_layout" type="string" value="O|SHMC"/>
+    <property name="snap_to_windows" type="bool" value="true"/>
+    <property name="snap_to_border" type="bool" value="true"/>
+    <property name="tile_on_move" type="bool" value="true"/>
+    <property name="wrap_workspaces" type="bool" value="false"/>
+  </property>
+</channel>
+XWEOF
+
+    cat > "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-terminal.xml" << 'TERMEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-terminal" version="1.0">
+  <property name="color-foreground" type="string" value="#f8f8f2"/>
+  <property name="color-background" type="string" value="#282a36"/>
+  <property name="color-cursor" type="string" value="#f8f8f2"/>
+  <property name="color-selection" type="string" value="#44475a"/>
+  <property name="color-palette" type="string" value="#21222c;#ff5555;#50fa7b;#f1fa8c;#bd93f9;#ff79c6;#8be9fd;#f8f8f2;#6272a4;#ff6e6e;#69ff94;#ffffa5;#d6acff;#ff92df;#a4ffff;#ffffff"/>
+  <property name="font-name" type="string" value="Monospace 11"/>
+  <property name="misc-use-padding" type="bool" value="true"/>
+  <property name="misc-cursor-blinks" type="bool" value="true"/>
+  <property name="misc-cursor-shape" type="uint" value="1"/>
+  <property name="scrolling-bar" type="uint" value="0"/>
+  <property name="tab-activity-color" type="string" value="#bd93f9"/>
+  <property name="title-mode" type="uint" value="0"/>
+</channel>
+TERMEOF
+
+    cat > "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml" << 'KBEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-keyboard-shortcuts" version="1.0">
+  <property name="commands" type="empty">
+    <property name="custom" type="empty">
+      <property name="&lt;Super&gt;e" type="string" value="thunar"/>
+      <property name="&lt;Super&gt;t" type="string" value="xfce4-terminal"/>
+      <property name="&lt;Super&gt;r" type="string" value="xfce4-appfinder --collapsed"/>
+      <property name="&lt;Alt&gt;F2" type="string" value="xfce4-appfinder --collapsed"/>
+      <property name="Print" type="string" value="xfce4-screenshooter"/>
+    </property>
+  </property>
+  <property name="xfwm4" type="empty">
+    <property name="custom" type="empty">
+      <property name="&lt;Alt&gt;F4" type="string" value="close_window_key"/>
+      <property name="&lt;Alt&gt;F10" type="string" value="maximize_window_key"/>
+      <property name="&lt;Super&gt;d" type="string" value="show_desktop_key"/>
+      <property name="&lt;Super&gt;Left" type="string" value="tile_left_key"/>
+      <property name="&lt;Super&gt;Right" type="string" value="tile_right_key"/>
+      <property name="&lt;Super&gt;Up" type="string" value="maximize_window_key"/>
+    </property>
+  </property>
+</channel>
+KBEOF
+
+    echo "[+] Modern XFCE theme applied (Fluent + Mint-Y + Dracula terminal + compositing)"
+}
+
 show_menu() {
     echo ""
     echo "========================================="
@@ -110,7 +206,8 @@ show_menu() {
     echo "  5) Apply light theme + wall 1"
     echo "  6) Apply dark theme + wall 2"
     echo "  7) Toggle dark/light mode"
-    echo "  8) Full setup (all steps)"
+    echo "  8) Apply modern XFCE theme (Dracula terminal + compositing)"
+    echo "  9) Full setup (all steps)"
     echo "  0) Exit"
     echo "========================================="
     echo -n "  Select option: "
@@ -125,9 +222,11 @@ run_full_setup() {
     copy_wallpapers
     apply_theme "light"
     set_wallpaper "$WALLPAPER_DIR/wall-1.jpg"
+    apply_modern_theme
     echo ""
     echo "[+] Full setup complete!"
     echo "[+] Use option 7 to toggle between dark and light mode"
+    echo "[+] Use option 8 to apply modern XFCE theme"
 }
 
 if [ "$1" = "toggle" ]; then
@@ -184,7 +283,8 @@ while true; do
             set_wallpaper "$WALLPAPER_DIR/wall-2.jpg"
             ;;
         7) toggle_mode ;;
-        8) run_full_setup ;;
+        8) apply_modern_theme ;;
+        9) run_full_setup ;;
         0) echo "[+] Exiting."; exit 0 ;;
         *) echo "[!] Invalid option" ;;
     esac

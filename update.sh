@@ -5,6 +5,7 @@ BACKUP_DIR="$HOME/.termux-desktop-backup"
 REPO_URL="https://github.com/Juanoto2012/TermDesk.git"
 
 scripts=("gui.sh" "theme.sh" "start-x11.sh" "stop-linux.sh" "update.sh")
+extra_files=("wall-1.jpg" "wall-2.jpg")
 
 backup_config() {
     mkdir -p "$BACKUP_DIR"
@@ -72,6 +73,26 @@ sync_scripts() {
         if [ ! -f "$tmp/$script" ] && [ -f "$REPO_DIR/$script" ]; then
             echo "[-] Removing obsolete script: $script"
             rm -f "$REPO_DIR/$script"
+        fi
+    done
+
+    for file in "${extra_files[@]}"; do
+        if [ -f "$tmp/$file" ]; then
+            if [ -f "$REPO_DIR/$file" ]; then
+                local old_md5=""
+                local new_md5=""
+                old_md5=$(md5sum "$REPO_DIR/$file" 2>/dev/null | awk '{print $1}')
+                new_md5=$(md5sum "$tmp/$file" 2>/dev/null | awk '{print $1}')
+                if [ "$old_md5" != "$new_md5" ]; then
+                    echo "[+] Updating $file"
+                    cp "$tmp/$file" "$REPO_DIR/$file"
+                else
+                    echo "[=] $file is up to date"
+                fi
+            else
+                echo "[+] Adding new file: $file"
+                cp "$tmp/$file" "$REPO_DIR/$file"
+            fi
         fi
     done
 
