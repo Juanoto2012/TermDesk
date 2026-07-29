@@ -31,7 +31,7 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 - <code>apt update</code>
 - <code>apt install git -y</code>
 - <code>git clone https://github.com/Juanoto2012/TermDesk.git</code>
-- <code>cd Termux-Desktop</code>
+- <code>cd TermDesk</code>
 - <code>chmod +x gui.sh theme.sh</code>
 - <code>./gui.sh</code>
 
@@ -40,29 +40,26 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 
 ## How to Start Termux Desktop Mode
 <ol>
-<li>Run <code>vncserver</code> Command.</li>
-<li>Add a password for VNC server.</li>
-<li>If everything is okay, you will get a IP address something like this.</li>
-<pre>localhost:session_number
-    i.e. localhost:1</pre>
-<li>Run <code>DISPLAY=:1 startxfce4 &</code> Command. <b>Here 1, will be your session number. </b></li>
-
-<li>Install <a href="https://play.google.com/store/apps/details?id=com.realvnc.viewer.android">VNC Viewer</a> from play store.</li>
-<li>Click on Add button and Enter the IP address which you get from Step 3.  i.e. <code>localhost:1</code></li>
-<li>Enter any Name and click on Create button.</li>
-<li>Click on Connect button.</li>
-<li>Enter the VNC password which you enterd in the Step 2.</li>
+<li>Run <code>Xvfb :1 -screen 0 1080x1920x24 &amp;</code> to start the X11 virtual display.</li>
+<li>Run <code>export DISPLAY=:1</code> to set the display environment variable.</li>
+<li>Run <code>startxfce4 &amp;</code> to start the XFCE desktop.</li>
+<li>Firefox is pre-installed — open it from the XFCE menu to browse the web.</li>
+<li>X11 provides hardware acceleration and better performance compared to VNC.</li>
 </ol>
+
+## Exit from Termux GUI
+<pre>pkill Xvfb
+</pre>
+<b>This kills the X11 virtual display and closes the desktop session</b>
 
 ## Changing Theme After Setup
 Once the desktop is running, you can change the theme at any time:
 <pre><code>./theme.sh toggle    # switch between dark and light</code></pre>
 
-## Exit from Termux GUI 
-<pre>vncserver -kill :session_number
-    i.e. vncserver -kill :1
+## Exit from Termux GUI
+<pre>pkill Xvfb
 </pre>
-<b>Here 1, will be your session number</b>
+<b>This kills the X11 virtual display and closes the desktop session</b>
 </br>
 # Follow me on 
 <a href="https://github.com/techpanther22"><img src="https://camo.githubusercontent.com/6db5a07d93819ee616798a5448d0b1c1746f6b45/68747470733a2f2f6564656e742e6769746875622e696f2f537570657254696e7949636f6e732f696d616765732f706e672f6769746875622e706e67" alt="Github" width="50px"></a>
