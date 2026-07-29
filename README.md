@@ -16,16 +16,31 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 - **Dark/Light mode toggle** — run `./theme.sh toggle` or use the interactive menu
 - **Mint-Y icon theme**
 - **Wallpapers** — wall-1.jpg (light mode) and wall-2.jpg (dark mode)
+- **Modern XFCE theme** — Dracula terminal, compositing, panel config, keyboard shortcuts
 
 ## Theme Commands
 - `./theme.sh` — interactive menu for theme setup
-- `./theme.sh full` — install everything (Fluent theme, icons, wallpapers, apply light theme)
+- `./theme.sh full` — install everything (Fluent theme, icons, wallpapers, apply light theme, modern theme)
 - `./theme.sh light` — apply Fluent light theme with wall 1
 - `./theme.sh dark` — apply Fluent dark theme with wall 2
 - `./theme.sh toggle` — switch between dark and light mode
 - `./theme.sh install-fluent [light|dark]` — install Fluent theme variant
 - `./theme.sh install-icons` — install mint-y-icon-theme
 - `./theme.sh wallpapers` — copy wallpapers to the wallpapers directory
+- `./theme.sh 8` — apply modern XFCE theme (Dracula terminal + compositing + keyboard shortcuts)
+
+## GPU Acceleration
+The setup includes smart GPU detection and acceleration:
+- **Adreno GPUs** — Turnip (Vulkan) driver for hardware-accelerated rendering
+- **Other GPUs** — Zink (OpenGL over Vulkan) fallback
+- **Mesa Zink** — OpenGL support via Vulkan
+- **Vulkan Loader** — Vulkan API support
+
+## Proot Linux Container
+Optional Proot container support for running a full Linux distribution alongside Termux:
+- **Ubuntu** (default) — full desktop environment with GPU passthrough
+- **Proot App Bridge** — apt-installed apps appear in the XFCE menu
+- **Wallpaper download** — fetches wallpaper from URL with gradient fallback
 
 ## How to Install
 - <code>apt update</code>
@@ -71,10 +86,10 @@ To update everything (packages, scripts, and configuration) while preserving you
 <pre><code>./update.sh force
 </code></pre>
 
-## Exit from Termux GUI
-<pre>pkill Xvfb
-</pre>
-<b>This kills the X11 virtual display and closes the desktop session</b>
+## Exit Desktop
+<pre><code>stop-linux.sh
+</code></pre>
+<p>This kills Termux-X11 and all desktop processes.</p>
 </br>
 # Follow me on 
 <a href="https://github.com/techpanther22"><img src="https://camo.githubusercontent.com/6db5a07d93819ee616798a5448d0b1c1746f6b45/68747470733a2f2f6564656e742e6769746875622e696f2f537570657254696e7949636f6e732f696d616765732f706e672f6769746875622e706e67" alt="Github" width="50px"></a>
