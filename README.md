@@ -39,19 +39,18 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 <pre><code>apt update && apt install git -y && git clone https://github.com/Juanoto2012/TermDesk && cd TermDesk && chmod +x gui.sh theme.sh && ./gui.sh</code></pre>
 
 ## How to Start Termux Desktop Mode
-<ol>
-<li>Run <code>Xvfb :1 -screen 0 1080x1920x24 &amp;</code> to start the X11 virtual display.</li>
-<li>Run <code>export DISPLAY=:1</code> to set the display environment variable.</li>
-<li>Run <code>startxfce4 &amp;</code> to start the XFCE desktop.</li>
-<li>Firefox is pre-installed — open it from the XFCE menu to browse the web.</li>
-<li>Pre-installed apps: <strong>galculator</strong> (calculator), <strong>parole</strong> (media player), <strong>gpicview</strong> (image viewer).</li>
-<li>X11 provides hardware acceleration and better performance compared to VNC.</li>
-</ol>
+<pre><code>linux
+</code></pre>
+<p>This starts Xvfb, sets the display, and launches XFCE with the Fluent theme.</p>
 
-## Exit from Termux GUI
-<pre>pkill Xvfb
-</pre>
-<b>This kills the X11 virtual display and closes the desktop session</b>
+<p>Pre-installed apps: <strong>Firefox</strong>, <strong>galculator</strong>, <strong>parole</strong>, <strong>gpicview</strong>.</p>
+
+<p>X11 provides hardware acceleration and better performance compared to VNC.</p>
+
+## Exit Desktop
+<pre><code>logout
+</code></pre>
+<p>This kills the X11 virtual display and closes the desktop session.</p>
 
 ## Changing Theme After Setup
 Once the desktop is running, you can change the theme at any time:

@@ -77,20 +77,17 @@ xfconf-query -c xfce4-desktop -p /xfce4-desktop/icon-theme-name -s "Mint-Y" 2>/d
 feh --bg-scale "$HOME/.local/share/wallpapers/wall-1.jpg" 2>/dev/null
 
 figlet FINISH | lolcat
+printf " \e[32;1m[+] Installing linux and logout commands ... \e[0m\n"
+cp linux "$PREFIX/bin/linux" 2>/dev/null
+cp logout "$PREFIX/bin/logout" 2>/dev/null
+chmod +x "$PREFIX/bin/linux" "$PREFIX/bin/logout" 2>/dev/null
+
 printf "\e[0m\n"
 printf "\e[32;1m[+]  Installation Complete  [+]  \e[0m\n"
 printf "\e[0m\n"
 printf "\e[0m\n"
-printf "\e[31;1m[+]  Follow the below steps to run Termux-Desktop  [+]  \e[0m\n"
-
-printf "\e[33;1m1.  Run '\e[32;1mXvfb :1 -screen 0 1080x1920x24 &\e[33;1m' command  \e[0m\n"
-printf "\e[33;1m2.  Run '\e[32;1mexport DISPLAY=:1\e[33;1m' command  \e[0m\n"
-printf "\e[33;1m3.  Now Run '\e[32;1mstartxfce4 &\e[33;1m' command  \e[0m\n"
-printf "\e[33;1m        [+]  X11 provides hardware acceleration and better performance  \e[0m\n"
-printf "\e[33;1m4.  Open Firefox from the XFCE menu to browse the web  \e[0m\n"
-printf "\e[33;1m5.  If you want to close the X11 session then kill the Xvfb process  \e[0m\n"
-printf "\e[33;1m        [+]  Use '\e[32;1mpkill Xvfb\e[33;1m' command  \e[0m\n"
-printf "\e[0m\n"
+printf "\e[33;1m  Type '\e[32;1mlinux\e[33;1m' to start the desktop  \e[0m\n"
+printf "\e[33;1m  Type '\e[32;1mlogout\e[33;1m' to exit the desktop  \e[0m\n"
 printf "\e[0m\n"
 printf "\e[32;1m[+]  Follow me on  [+]  \e[0m\n"
 printf "\e[32;1m     [+]  Youtube  :  youtube.com/techpanther     [+]  \e[0m\n"
