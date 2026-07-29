@@ -17,7 +17,7 @@ apt update -y && apt upgrade -y
 printf " \e[32;1m[+] Installing x11-repo Package ... \e[0m\n"
 apt install x11-repo -y
 printf " \e[32;1m[+] Installing X11 Packages ... \e[0m\n"
-pkg install xorg x11-xserver-utils -y
+pkg install xorg x11-xserver-utils termux-x11 dbus -y
 printf " \e[32;1m[+] Installing xfce4 Package ... \e[0m\n"
 apt install xfce xfce4 -y
 printf " \e[32;1m[+] Installing Firefox ... \e[0m\n"
@@ -96,7 +96,7 @@ export HOST="android-linux"
 pkill -9 -f "termux.x11" 2>/dev/null
 pkill -9 -f "Xvnc" 2>/dev/null
 pkill -9 -f "startxfce4" 2>/dev/null
-pkill -9 -f "dbus" 2>/dev/null
+pkill -9 -f "dbus-daemon" 2>/dev/null
 
 unset PULSE_SERVER
 pulseaudio --kill 2>/dev/null
@@ -107,10 +107,22 @@ sleep 1
 pactl load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1 2>/dev/null
 export PULSE_SERVER=127.0.0.1
 
+if command -v dbus-daemon > /dev/null 2>&1; then
+    echo "[*] Starting dbus..."
+    dbus-daemon --system 2>/dev/null
+    dbus-launch --exit-with-session 2>/dev/null
+fi
+
 echo "[*] Starting Termux-X11 on :0..."
 termux-x11 :0 -ac &
 sleep 3
 export DISPLAY=:0
+
+if [ -z "$DISPLAY" ]; then
+    echo "[!] Error: DISPLAY is not set. Termux-X11 may not be installed."
+    echo "    Run: pkg install termux-x11"
+    exit 1
+fi
 
 echo "----------------------------------------------"
 echo "  [*] Open the Termux-X11 app to see desktop"
@@ -127,7 +139,7 @@ pkill -9 -f "termux.x11" 2>/dev/null
 pkill -9 -f "Xvnc" 2>/dev/null
 pkill -9 -f "startxfce4" 2>/dev/null
 pkill -9 -f "pulseaudio" 2>/dev/null
-pkill -9 -f "dbus" 2>/dev/null
+pkill -9 -f "dbus-daemon" 2>/dev/null
 rm -f /tmp/.X1-lock /tmp/.X11-unix/X1 2>/dev/null
 echo "Done."
 STOPEOF
