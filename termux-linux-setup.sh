@@ -812,6 +812,10 @@ COMPLETE
     echo -e "${RED}           ▶  orailnoor  on YouTube  ◀${NC}"
     echo -e "${YELLOW}  ★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★${NC}"
     echo ""
+    echo -e "${CYAN}  📦  TermDesk GitHub User Content:${NC}"
+    echo -e "${WHITE}    https://raw.githubusercontent.com/Juanoto2012/TermDesk/main/${NC}"
+    echo -e "${WHITE}    Used for setup.sh and all TermDesk resources.${NC}"
+    echo ""
 }
 
 # ============== MAIN ==============
