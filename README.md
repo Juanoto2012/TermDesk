@@ -39,18 +39,18 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 <pre><code>apt update && apt install git -y && git clone https://github.com/Juanoto2012/TermDesk && cd TermDesk && chmod +x gui.sh theme.sh && ./gui.sh</code></pre>
 
 ## How to Start Termux Desktop Mode
-<pre><code>linux
+<pre><code>start-x11.sh
 </code></pre>
-<p>This starts Xvfb, sets the display, and launches XFCE with the Fluent theme.</p>
+<p>This starts Termux-X11, sets up audio, and launches XFCE with the Fluent theme.</p>
 
 <p>Pre-installed apps: <strong>Firefox</strong>, <strong>galculator</strong>, <strong>parole</strong>, <strong>gpicview</strong>.</p>
 
 <p>X11 provides hardware acceleration and better performance compared to VNC.</p>
 
 ## Exit Desktop
-<pre><code>logout
+<pre><code>stop-linux.sh
 </code></pre>
-<p>This kills the X11 virtual display and closes the desktop session.</p>
+<p>This kills Termux-X11 and all desktop processes.</p>
 
 ## Changing Theme After Setup
 Once the desktop is running, you can change the theme at any time:
