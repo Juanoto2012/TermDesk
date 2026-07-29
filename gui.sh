@@ -17,7 +17,7 @@ apt update -y && apt upgrade -y
 printf " \e[32;1m[+] Installing x11-repo Package ... \e[0m\n"
 apt install x11-repo -y
 printf " \e[32;1m[+] Installing X11 Packages ... \e[0m\n"
-apt install xorg xvfb x11-xserver-utils -y
+pkg install xorg x11-xserver-utils -y
 printf " \e[32;1m[+] Installing xfce4 Package ... \e[0m\n"
 apt install xfce xfce4 -y
 printf " \e[32;1m[+] Installing Firefox ... \e[0m\n"
