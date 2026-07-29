@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if pgrep -x Xvfb > /dev/null 2>&1; then
+    echo "[!] X11 is already running. Close it first with 'logout'."
+    exit 1
+fi
+
+export DISPLAY=:1
+Xvfb :1 -screen 0 1080x1920x24 &
+sleep 2
+
+xfconf-query -c xsettings -p /Net/ThemeName -s "Fluent" 2>/dev/null
+xfconf-query -c xsettings -p /Net/IconThemeName -s "Mint-Y" 2>/dev/null
+xfconf-query -c xfce4-desktop -p /xfce4-desktop/icon-theme-name -s "Mint-Y" 2>/dev/null
+feh --bg-scale "$HOME/.local/share/wallpapers/wall-1.jpg" 2>/dev/null
+
+startxfce4 &
+
+echo "[+] Desktop started. Use 'logout' to exit."
