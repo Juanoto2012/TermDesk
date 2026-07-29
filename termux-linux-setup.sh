@@ -7,8 +7,6 @@
 #  - Smart GPU acceleration (Turnip/Zink)
 #  - Termux-X11 display + optional VNC
 #  - Modern dark XFCE theme + auto wallpaper
-#  - Proot Linux container (Ubuntu/Debian/Kali)
-#  - Proot App Bridge (apt installs appear in XFCE menu)
 #  - Python & Web Dev environment
 #######################################################
 
@@ -89,7 +87,7 @@ show_banner() {
     ╔══════════════════════════════════════════╗
     ║                                          ║
     ║       Termux Linux Setup Script          ║
-    ║       X11 + Proot + Modern XFCE          ║
+    ║       X11 + Modern XFCE          ║
     ║                                          ║
     ╚══════════════════════════════════════════╝
 BANNER
@@ -153,7 +151,6 @@ setup_environment() {
 
     # ---- Username ----
     SETUP_USERNAME="root"
-    echo -e "  ${GREEN}[+] Proot User set to: ${SETUP_USERNAME} (Default)${NC}"
     sleep 1
 }
 
@@ -263,285 +260,6 @@ step_python() {
     echo -e "  [+] Python 3 installed"
 }
 
-# ============== STEP 9: PROOT ==============
-step_proot() {
-    update_progress
-    echo -e "${PURPLE}[Step ${CURRENT_STEP}/${TOTAL_STEPS}] Setting up Proot Container...${NC}"
-    echo ""
-
-    install_pkg "proot-distro" "Proot-Distro Manager"
-    install_pkg "proot" "PRoot"
-
-    echo ""
-    # ── Hardcoded to Ubuntu (DroidDesk default) ──
-    PROOT_DISTRO="ubuntu"
-    PROOT_LABEL="Ubuntu 22.04"
-    echo -e "${GREEN}[+] Proot distro: ${PROOT_LABEL} (default)${NC}"
-
-    # --- Multi-distro selection (commented out for now) ---
-    # echo -e "${CYAN}Choose a Linux distro for Proot:${NC}"
-    # echo -e "  ${WHITE}1) Ubuntu 22.04 LTS${NC}  (Recommended)"
-    # echo -e "  ${WHITE}2) Debian 12${NC}          (Minimal)"
-    # echo -e "  ${WHITE}3) Kali Linux${NC}         (Security/Pentesting)"
-    # echo ""
-    # while true; do
-    #     read -p "Enter number (1-3) [default: 1]: " PROOT_INPUT
-    #     PROOT_INPUT=${PROOT_INPUT:-1}
-    #     if [[ "$PROOT_INPUT" =~ ^[1-3]$ ]]; then break; fi
-    #     echo "Please enter 1, 2, or 3."
-    # done
-    # case $PROOT_INPUT in
-    #     1) PROOT_DISTRO="ubuntu";         PROOT_LABEL="Ubuntu 22.04";;
-    #     2) PROOT_DISTRO="debian";         PROOT_LABEL="Debian 12";;
-    #     3) PROOT_DISTRO="kali-nethunter"; PROOT_LABEL="Kali Linux";;
-    # esac
-
-    echo -e "\n${GREEN}[+] Installing ${PROOT_LABEL}...${NC}"
-    (proot-distro install "$PROOT_DISTRO" > /dev/null 2>&1) &
-    spinner $! "Downloading ${PROOT_LABEL} rootfs (may take a while)..."
-
-    echo -e "  [*] Bootstrapping ${PROOT_LABEL}..."
-    proot-distro login "$PROOT_DISTRO" -- bash -c "
-        export DEBIAN_FRONTEND=noninteractive
-        apt-get update -y -q > /dev/null 2>&1
-        apt-get install -y -q --no-install-recommends \
-            mesa-utils vulkan-tools \
-            libgl1-mesa-glx libvulkan1 libgles2 \
-            xfce4 xfce4-terminal dbus-x11 \
-            sudo curl wget git htop nano > /dev/null 2>&1
-    " 2>/dev/null || true
-    echo -e "  [+] ${PROOT_LABEL} ready."
-
-    # ---- Create named user with working sudo ----
-    echo -e "  [*] Creating proot user: ${SETUP_USERNAME} (with sudo)..."
-    proot-distro login "$PROOT_DISTRO" -- bash -c "
-        # Create user if not exists
-        id '$SETUP_USERNAME' > /dev/null 2>&1 || \
-            useradd -m -s /bin/bash '$SETUP_USERNAME'
-
-        # Add to sudo group
-        usermod -aG sudo '$SETUP_USERNAME' 2>/dev/null || true
-
-        # Drop-in sudoers file (cleaner than editing /etc/sudoers directly)
-        # Defaults !requiretty  — allows sudo without a real terminal (proot)
-        # NOPASSWD            — no password prompt
-        mkdir -p /etc/sudoers.d
-        echo 'Defaults !requiretty' > /etc/sudoers.d/proot-compat
-        echo '$SETUP_USERNAME ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers.d/proot-compat
-        chmod 0440 /etc/sudoers.d/proot-compat
-
-        # Ensure sudo binary has correct permissions (SETUID)
-        chmod u+s /usr/bin/sudo 2>/dev/null || true
-
-        # Nice coloured shell prompt
-        echo 'export PS1="\[\033[01;32m\]${SETUP_USERNAME}@linux\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "' \
-            >> /home/'$SETUP_USERNAME'/.bashrc
-        # Useful aliases
-        echo 'alias ll="ls -la"' >> /home/'$SETUP_USERNAME'/.bashrc
-        echo 'alias update="sudo apt update && sudo apt upgrade -y"' >> /home/'$SETUP_USERNAME'/.bashrc
-    " 2>/dev/null || true
-    echo -e "  [+] Proot user '${SETUP_USERNAME}' created with passwordless sudo"
-
-    PROOT_BIN="/data/data/com.termux/files/usr/bin/proot-distro"
-    TERMUX_VK_ICD="/data/data/com.termux/files/usr/share/vulkan/icd.d"
-    TERMUX_LIB="/data/data/com.termux/files/usr/lib"
-
-    # ---- start-proot.sh ----
-    cat > ~/start-proot.sh << PROOTEOF
-#!/data/data/com.termux/files/usr/bin/bash
-PROOT_DISTRO="$PROOT_DISTRO"
-PROOT_LABEL="$PROOT_LABEL"
-TERMUX_TMP="\${TMPDIR:-/data/data/com.termux/files/usr/tmp}"
-
-echo ""
-echo "============================================="
-echo "  [*] Starting \$PROOT_LABEL"
-echo "============================================="
-echo ""
-
-BINDS=""
-[ -d "\$TERMUX_TMP/.X11-unix" ] && BINDS="\$BINDS --bind \$TERMUX_TMP/.X11-unix:/tmp/.X11-unix"
-[ -d "/dev/dri" ]               && BINDS="\$BINDS --bind /dev/dri:/dev/dri"
-[ -e "/dev/kgsl-3d0" ]          && BINDS="\$BINDS --bind /dev/kgsl-3d0:/dev/kgsl-3d0"
-[ -d "${TERMUX_VK_ICD}" ]       && BINDS="\$BINDS --bind ${TERMUX_VK_ICD}:/usr/share/vulkan/icd.d.termux"
-[ -f "${TERMUX_LIB}/libvulkan.so" ] && \
-    BINDS="\$BINDS --bind ${TERMUX_LIB}/libvulkan.so:/usr/lib/aarch64-linux-gnu/libvulkan_termux.so"
-
-_RC=\$(mktemp /data/data/com.termux/files/usr/tmp/proot_rc.XXXX)
-cat > "\$_RC" << 'RCEOF'
-export DISPLAY=:0
-export MESA_NO_ERROR=1
-export MESA_GL_VERSION_OVERRIDE=4.6
-export MESA_GLES_VERSION_OVERRIDE=3.2
-export GALLIUM_DRIVER=zink
-export MESA_LOADER_DRIVER_OVERRIDE=zink
-export TU_DEBUG=noconform
-export ZINK_DESCRIPTORS=lazy
-export MESA_VK_WSI_PRESENT_MODE=immediate
-[ -f /usr/share/vulkan/icd.d.termux/freedreno_icd.aarch64.json ] && \
-    export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d.termux/freedreno_icd.aarch64.json
-export XDG_DATA_DIRS=/usr/share:/usr/local/share:\${XDG_DATA_DIRS}
-export PS1="\[\033[01;32m\]$SETUP_USERNAME@linux\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
-echo ""
-echo " User: $SETUP_USERNAME | GPU: GALLIUM=\${GALLIUM_DRIVER}"
-echo " Type 'exit' to leave proot."
-echo ""
-RCEOF
-
-proot-distro login "\$PROOT_DISTRO" \$BINDS --user root -- bash --rcfile "\$_RC"
-rm -f "\$_RC"
-PROOTEOF
-    chmod +x ~/start-proot.sh
-    echo -e "  [+] Created ~/start-proot.sh"
-
-    # ---- proot-menu-sync.sh (v3 — embedded) ----
-    cat > ~/proot-menu-sync.sh << 'SYNCEOF'
-#!/data/data/com.termux/files/usr/bin/bash
-# ============================================================
-#  Proot App Menu Bridge v3
-#  Syncs proot .desktop files into native XFCE menu.
-#  Fixes: $TMPDIR log path, runtime X11 bind, dbus-run-session,
-#         Blender libvulkan auto-detect, LibreOffice --norestore
-# ============================================================
-
-PROOT_DISTRO="${1:-ubuntu}"
-PROOT_BIN="/data/data/com.termux/files/usr/bin/proot-distro"
-PROOT_ROOTFS="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/$PROOT_DISTRO"
-PROOT_APPS="$PROOT_ROOTFS/usr/share/applications"
-BRIDGE_DIR="$HOME/.local/share/applications/proot-bridge"
-WRAPPER_DIR="$HOME/.local/share/proot-wrappers"
-TERMUX_TMP="${TMPDIR:-/data/data/com.termux/files/usr/tmp}"
-
-if [ ! -f "$PROOT_BIN" ]; then
-    echo "[!] proot-distro not found. pkg install proot-distro"
-    exit 1
-fi
-if [ ! -d "$PROOT_ROOTFS" ]; then
-    echo "[!] Proot distro '$PROOT_DISTRO' not installed."
-    exit 1
-fi
-if [ ! -d "$PROOT_APPS" ]; then
-    echo "[!] No proot apps yet. proot-distro login $PROOT_DISTRO -- apt install <pkg>"
-    exit 0
-fi
-
-mkdir -p "$BRIDGE_DIR" "$WRAPPER_DIR"
-
-HAS_GPU="software"
-[ -d "/dev/dri" ] && HAS_GPU="zink"
-
-# Ensure dbus-x11 in proot
-if ! "$PROOT_BIN" login "$PROOT_DISTRO" -- which dbus-run-session > /dev/null 2>&1; then
-    echo "[*] Installing dbus-x11 in proot..."
-    "$PROOT_BIN" login "$PROOT_DISTRO" -- apt-get install -y -q dbus-x11 > /dev/null 2>&1
-fi
-
-SYNCED=0
-REMOVED=0
-
-for bridge_file in "$BRIDGE_DIR"/proot-*.desktop; do
-    [ -f "$bridge_file" ] || continue
-    original_name=$(basename "$bridge_file" | sed 's/^proot-//')
-    if [ ! -f "$PROOT_APPS/$original_name" ]; then
-        rm -f "$bridge_file" "$WRAPPER_DIR/proot-${original_name%.desktop}.sh"
-        REMOVED=$((REMOVED + 1))
-    fi
-done
-
-for desktop_file in "$PROOT_APPS"/*.desktop; do
-    [ -f "$desktop_file" ] || continue
-
-    filename=$(basename "$desktop_file")
-    appname="${filename%.desktop}"
-    output="$BRIDGE_DIR/proot-$filename"
-    wrapper="$WRAPPER_DIR/proot-${appname}.sh"
-
-    grep -q "^NoDisplay=true" "$desktop_file" 2>/dev/null && continue
-    grep -q "^Hidden=true"    "$desktop_file" 2>/dev/null && continue
-
-    ORIGINAL_EXEC=$(grep "^Exec=" "$desktop_file" | head -1 | sed 's/^Exec=//')
-    [ -z "$ORIGINAL_EXEC" ] && continue
-    CLEAN_EXEC=$(echo "$ORIGINAL_EXEC" | sed 's/ %[a-zA-Z]//g; s/%[a-zA-Z]//g')
-
-    APP_CMD="$CLEAN_EXEC"
-    EXTRA_ENV=""
-
-    echo "$appname" | grep -qi "libreoffice\|soffice" && \
-        APP_CMD="$CLEAN_EXEC --norestore --nofirststartwizard"
-
-    if echo "$appname" | grep -qi "blender"; then
-        APP_CMD="$CLEAN_EXEC"
-        if "$PROOT_BIN" login "$PROOT_DISTRO" -- \
-                ldconfig -p 2>/dev/null | grep -q "libvulkan.so.1"; then
-            EXTRA_ENV="export GALLIUM_DRIVER=zink; export MESA_GL_VERSION_OVERRIDE=4.6;"
-            echo "  [+] Blender: Zink GPU mode"
-        else
-            EXTRA_ENV="export LIBGL_ALWAYS_SOFTWARE=1; export GALLIUM_DRIVER=llvmpipe; export MESA_GL_VERSION_OVERRIDE=4.5;"
-            echo "  [!] Blender: Software mode (install libvulkan1 in proot for GPU)"
-        fi
-    fi
-
-    cat > "$wrapper" << WRAPEOF
-#!/data/data/com.termux/files/usr/bin/bash
-PROOT_BIN="$PROOT_BIN"
-PROOT_DISTRO="$PROOT_DISTRO"
-TERMUX_TMP="\${TMPDIR:-/data/data/com.termux/files/usr/tmp}"
-LOG="\$TERMUX_TMP/proot-${appname}.log"
-
-BINDS=""
-X11_DIR="\$TERMUX_TMP/.X11-unix"
-[ -d "\$X11_DIR" ]     && BINDS="\$BINDS --bind \$X11_DIR:/tmp/.X11-unix"
-[ -d "/dev/dri" ]      && BINDS="\$BINDS --bind /dev/dri:/dev/dri"
-[ -e "/dev/kgsl-3d0" ] && BINDS="\$BINDS --bind /dev/kgsl-3d0:/dev/kgsl-3d0"
-
-{
-echo "[+] Launching $appname at \$(date)"
-echo "    X11=\$X11_DIR  BINDS=\$BINDS"
-\$PROOT_BIN login "\$PROOT_DISTRO" \$BINDS -- /bin/bash -c "
-export DISPLAY=:0
-export XDG_RUNTIME_DIR=/tmp
-export MESA_NO_ERROR=1
-$EXTRA_ENV
-dbus-run-session $APP_CMD
-"
-EXIT_CODE=\$?
-echo "Exit: \$EXIT_CODE at \$(date)"
-} > "\$LOG" 2>&1
-
-[ \$EXIT_CODE -ne 0 ] && \
-    xfce4-terminal --title="$appname error" \
-        -e "bash -c 'cat \$LOG; echo; read -p \"Press Enter\"'" &
-WRAPEOF
-    chmod +x "$wrapper"
-
-    cp "$desktop_file" "$output"
-    sed -i \
-        -e "s|^Exec=.*|Exec=$wrapper|" \
-        -e "s|^TryExec=.*|TryExec=$wrapper|" \
-        -e '/^NoDisplay=/d' -e '/^Hidden=/d' \
-        "$output"
-    echo "NoDisplay=false" >> "$output"
-
-    APP_NAME=$(grep "^Name=" "$output" | head -1 | sed 's/^Name=//')
-    [[ "$APP_NAME" != \[P\]* ]] && sed -i "s|^Name=.*|Name=[P] $APP_NAME|" "$output"
-    SYNCED=$((SYNCED + 1))
-done
-
-echo "[+] Bridge: $SYNCED synced, $REMOVED removed."
-echo "    Logs: \$TERMUX_TMP/proot-<appname>.log"
-echo "    Re-run after new installs: bash ~/proot-menu-sync.sh"
-
-pgrep -x "xfce4-panel" > /dev/null 2>&1 && xfce4-panel --restart > /dev/null 2>&1 &
-pgrep -x "xfdesktop"   > /dev/null 2>&1 && { sleep 1; xfdesktop --reload > /dev/null 2>&1 & }
-SYNCEOF
-    chmod +x ~/proot-menu-sync.sh
-    echo -e "  [+] Created ~/proot-menu-sync.sh"
-
-    # Run once during install
-    bash ~/proot-menu-sync.sh "$PROOT_DISTRO" 2>/dev/null || true
-}
-
-# ============== STEP 10: LAUNCHERS ==============
 step_launchers() {
     update_progress
     echo -e "${PURPLE}[Step ${CURRENT_STEP}/${TOTAL_STEPS}] Creating Startup Scripts...${NC}"
@@ -622,8 +340,6 @@ termux-x11 :0 -ac &
 sleep 3
 export DISPLAY=:0
 
-# Sync proot apps into menu (background, non-blocking)
-[ -f ~/proot-menu-sync.sh ] && bash ~/proot-menu-sync.sh > /dev/null 2>&1 &
 
 echo "----------------------------------------------"
 echo "  [*] Open the Termux-X11 app to see desktop"
@@ -913,18 +629,49 @@ Icon=utilities-terminal
 Type=Application
 EOF
 
-    cat > ~/Desktop/Proot.desktop << EOF
-[Desktop Entry]
-Name=Linux Container
-Comment=Open Proot Shell with GPU support
-Exec=${term_cmd} -e "bash /root/start-proot.sh"
-Icon=system-run
-Type=Application
-Terminal=false
-EOF
+}
 
-    chmod +x ~/Desktop/*.desktop 2>/dev/null
-    echo -e "  [+] Shortcuts: Firefox, Files, Terminal, Proot"
+# ============== TERMDesk FEATURES ==============
+step_termdesk() {
+    update_progress
+    echo -e "${PURPLE}[Step ${CURRENT_STEP}/${TOTAL_STEPS}] Applying TermDesk Theme ...${NC}"
+    echo ""
+
+    # Fluent Theme
+    echo -e "  [*] Installing Fluent theme..."
+    git clone https://github.com/vinceliuice/Fluent-gtk-theme.git /tmp/fluent-theme 2>/dev/null
+    if [ -f /tmp/fluent-theme/install.sh ]; then
+        bash /tmp/fluent-theme/install.sh -l 2>/dev/null
+        bash /tmp/fluent-theme/install.sh -d -l 2>/dev/null
+    fi
+    rm -rf /tmp/fluent-theme
+
+    # Mint-Y Icon Theme
+    echo -e "  [*] Installing Mint-Y icon theme..."
+    git clone https://github.com/vinceliuice/mint-y-icon-theme.git /tmp/mint-y-icon-theme 2>/dev/null
+    if [ -d /tmp/mint-y-icon-theme/icons/Mint-Y ]; then
+        mkdir -p "$HOME/.icons"
+        cp -r /tmp/mint-y-icon-theme/icons/Mint-Y "$HOME/.icons/"
+    fi
+    rm -rf /tmp/mint-y-icon-theme
+
+    # TermDesk Wallpapers
+    echo -e "  [*] Setting TermDesk wallpapers..."
+    mkdir -p "$HOME/.local/share/wallpapers"
+    if [ -f "$REPO_DIR/wall-1.jpg" ]; then
+        cp "$REPO_DIR/wall-1.jpg" "$HOME/.local/share/wallpapers/wall-1.jpg" 2>/dev/null
+    fi
+    if [ -f "$REPO_DIR/wall-2.jpg" ]; then
+        cp "$REPO_DIR/wall-2.jpg" "$HOME/.local/share/wallpapers/wall-2.jpg" 2>/dev/null
+    fi
+
+    # Apply Fluent theme light + Mint-Y icons
+    xfconf-query -c xsettings -p /Net/ThemeName -s "Fluent" 2>/dev/null
+    xfconf-query -c xsettings -p /Net/IconThemeName -s "Mint-Y" 2>/dev/null
+    xfconf-query -c xfce4-desktop -p /xfce4-desktop/icon-theme-name -s "Mint-Y" 2>/dev/null
+    feh --bg-scale "$HOME/.local/share/wallpapers/wall-1.jpg" 2>/dev/null
+
+    echo -e "  [+] TermDesk theme applied (Fluent + Mint-Y + wallpapers)"
 }
 
 # ============== VNC (OPTIONAL — asked at end) ==============
@@ -1034,8 +781,9 @@ COMPLETE
     echo -e "${CYAN}[*] Installed:${NC}"
     echo "    - Firefox, Git, Python 3"
     echo "    - GPU Acceleration (Turnip/Zink)"
-    echo "    - Proot Linux Container + App Bridge"
-    echo "    - Modern Dark XFCE Theme (Adwaita + Dracula terminal)"
+    echo "    - Modern Dark XFCE Theme (Adwaita + Dracula terminal)
+    - Fluent Theme + Mint-Y Icons (TermDesk)
+    - TermDesk Wallpapers (wall-1 / wall-2)"
     echo ""
     echo -e "${YELLOW}============================================================${NC}"
     echo -e "${WHITE}  HOW TO START:${NC}"
@@ -1050,11 +798,7 @@ COMPLETE
         echo -e "    ${WHITE}bash ~/start-vnc.sh${NC}  → 127.0.0.1:5901"
         echo ""
     fi
-    echo -e "  ${GREEN}Proot Linux shell:${NC}"
-    echo -e "    ${WHITE}bash ~/start-proot.sh${NC}"
     echo ""
-    echo -e "  ${GREEN}Install proot app → sync to XFCE menu:${NC}"
-    echo -e "    ${WHITE}bash ~/proot-menu-sync.sh${NC}"
     echo ""
     echo -e "  ${GREEN}Stop everything:${NC}"
     echo -e "    ${WHITE}bash ~/stop-linux.sh${NC}"
@@ -1083,10 +827,10 @@ main() {
     step_audio
     step_apps
     step_python
-    step_proot
     step_launchers
     step_theme_xfce
     step_shortcuts
+    step_termdesk
 
     # Optional VNC — asked after all main steps
     step_vnc_optional

@@ -2,7 +2,6 @@
 
 # TermDesk UI Installer
 # Wraps DroidDesk's termux-linux-setup.sh with TermDesk-specific features
-# (Fluent theme, Mint-Y icons, custom wallpapers)
 
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -36,7 +35,7 @@ mkdir -p "$HOME/.icons"
 cp -r /tmp/mint-y-icon-theme/icons/Mint-Y "$HOME/.icons/" 2>/dev/null
 rm -rf /tmp/mint-y-icon-theme
 
-printf " \e[32;1m[+] Setting wallpapers ... \e[0m\n"
+printf " \e[32;1m[+] Setting TermDesk wallpapers ... \e[0m\n"
 mkdir -p "$HOME/.local/share/wallpapers"
 cp "$REPO_DIR/wall-1.jpg" "$HOME/.local/share/wallpapers/wall-1.jpg" 2>/dev/null
 cp "$REPO_DIR/wall-2.jpg" "$HOME/.local/share/wallpapers/wall-2.jpg" 2>/dev/null
