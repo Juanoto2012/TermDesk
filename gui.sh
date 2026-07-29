@@ -47,6 +47,30 @@ pkg install pulseaudio -y
 pkg install netsurf -y
 pkg install xfce4-terminal -y
 apt install xfce4-settings -y
+
+printf " \e[32;1m[+] Installing Fluent Theme ... \e[0m\n"
+git clone https://github.com/vinceliuice/Fluent-gtk-theme.git /tmp/fluent-theme 2>/dev/null
+bash /tmp/fluent-theme/install.sh -l 2>/dev/null
+bash /tmp/fluent-theme/install.sh -d -l 2>/dev/null
+rm -rf /tmp/fluent-theme
+
+printf " \e[32;1m[+] Installing mint-y-icon-theme ... \e[0m\n"
+git clone https://github.com/vinceliuice/mint-y-icon-theme.git /tmp/mint-y-icon-theme 2>/dev/null
+mkdir -p "$HOME/.icons"
+cp -r /tmp/mint-y-icon-theme/icons/Mint-Y "$HOME/.icons/" 2>/dev/null
+rm -rf /tmp/mint-y-icon-theme
+
+printf " \e[32;1m[+] Setting wallpapers ... \e[0m\n"
+mkdir -p "$HOME/.local/share/wallpapers"
+cp wall-1.jpg "$HOME/.local/share/wallpapers/wall-1.jpg" 2>/dev/null
+cp wall-2.jpg "$HOME/.local/share/wallpapers/wall-2.jpg" 2>/dev/null
+
+printf " \e[32;1m[+] Applying Fluent theme (light) with Mint-Y icons ... \e[0m\n"
+xfconf-query -c xsettings -p /Net/ThemeName -s "Fluent" 2>/dev/null
+xfconf-query -c xsettings -p /Net/IconThemeName -s "Mint-Y" 2>/dev/null
+xfconf-query -c xfce4-desktop -p /xfce4-desktop/icon-theme-name -s "Mint-Y" 2>/dev/null
+feh --bg-scale "$HOME/.local/share/wallpapers/wall-1.jpg" 2>/dev/null
+
 figlet FINISH | lolcat
 printf "\e[0m\n"
 printf "\e[32;1m[+]  Installation Complete  [+]  \e[0m\n"
