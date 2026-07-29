@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if ! pgrep -x Xvfb > /dev/null 2>&1; then
-    echo "[!] No X11 session is running."
-    exit 1
-fi
-
-pkill Xvfb
-echo "[+] Desktop session ended."

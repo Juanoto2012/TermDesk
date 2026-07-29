@@ -4,7 +4,7 @@ REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 BACKUP_DIR="$HOME/.termux-desktop-backup"
 REPO_URL="https://github.com/Juanoto2012/TermDesk.git"
 
-scripts=("gui.sh" "theme.sh" "linux" "logout" "update.sh")
+scripts=("gui.sh" "theme.sh" "start-x11.sh" "stop-linux.sh" "update.sh")
 
 backup_config() {
     mkdir -p "$BACKUP_DIR"
