@@ -3,10 +3,10 @@
 <b>Termux is an intractive application ion the android platform to run linux commands.</b>
 </br></br>After setting up all these things , you will see something like this.
 
-<a target="_blank" rel="noopener noreferrer" href="https://raw.githubusercontent.com/techpanther22/Termux-Desktop/master/Images/Image-1.jpg"><img src="https://raw.githubusercontent.com/techpanther22/Termux-Desktop/master/Images/Image-1.jpg" alt="Image-1" style="max-width:100%;"></a>
+<a target="_blank" rel="noopener noreferrer" href="https://raw.githubusercontent.com/Juanoto2012/TermDesk/master/Images/Image-1.jpg"><img src="https://raw.githubusercontent.com/Juanoto2012/TermDesk/master/Images/Image-1.jpg" alt="Image-1" style="max-width:100%;"></a>
 </br>
 </br>
-<a target="_blank" rel="noopener noreferrer" href="https://raw.githubusercontent.com/techpanther22/Termux-Desktop/master/Images/Image-2.jpg"><img src="https://raw.githubusercontent.com/techpanther22/Termux-Desktop/master/Images/Image-2.jpg" alt="Image-2" style="max-width:100%;"></a>
+<a target="_blank" rel="noopener noreferrer" href="https://raw.githubusercontent.com/Juanoto2012/TermDesk/master/Images/Image-2.jpg"><img src="https://raw.githubusercontent.com/Juanoto2012/TermDesk/master/Images/Image-2.jpg" alt="Image-2" style="max-width:100%;"></a>
 
 # Desktop Theme
 This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **Mint-Y icon theme**, and **wallpapers** (wall 1 & wall 2).
@@ -30,13 +30,13 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 ## How to Install
 - <code>apt update</code>
 - <code>apt install git -y</code>
-- <code>git clone https://github.com/techpanther22/Termux-Desktop.git</code>
+- <code>git clone https://github.com/Juanoto2012/TermDesk.git</code>
 - <code>cd Termux-Desktop</code>
 - <code>chmod +x gui.sh theme.sh</code>
 - <code>./gui.sh</code>
 
 ## Single Command Installation
-<pre><code>apt update && apt install git -y && git clone https://github.com/techpanther22/Termux-Desktop && cd Termux-Desktop && chmod +x gui.sh theme.sh && ./gui.sh</code></pre>
+<pre><code>apt update && apt install git -y && git clone https://github.com/Juanoto2012/TermDesk && cd TermDesk && chmod +x gui.sh theme.sh && ./gui.sh</code></pre>
 
 ## How to Start Termux Desktop Mode
 <ol>

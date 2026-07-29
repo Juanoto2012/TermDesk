@@ -31,13 +31,12 @@ install_minty_icons() {
     local tmp="/tmp/mint-y-icon-theme"
     rm -rf "$tmp"
     git clone "$MINTY_REPO" "$tmp" 2>/dev/null
-    if [ ! -f "$tmp/install.sh" ]; then
+    if [ ! -d "$tmp/icons/Mint-Y" ]; then
         echo "[!] Failed to clone mint-y-icon-theme repo"
         return 1
     fi
-    cd "$tmp"
-    bash install.sh
-    cd - >/dev/null 2>&1
+    mkdir -p "$ICONS_DIR"
+    cp -r "$tmp/icons/Mint-Y" "$ICONS_DIR/"
     rm -rf "$tmp"
 }
 

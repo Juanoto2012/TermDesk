@@ -56,7 +56,8 @@ rm -rf /tmp/fluent-theme
 
 printf " \e[32;1m[+] Installing mint-y-icon-theme ... \e[0m\n"
 git clone https://github.com/vinceliuice/mint-y-icon-theme.git /tmp/mint-y-icon-theme 2>/dev/null
-bash /tmp/mint-y-icon-theme/install.sh 2>/dev/null
+mkdir -p "$HOME/.icons"
+cp -r /tmp/mint-y-icon-theme/icons/Mint-Y "$HOME/.icons/" 2>/dev/null
 rm -rf /tmp/mint-y-icon-theme
 
 printf " \e[32;1m[+] Setting wallpapers ... \e[0m\n"
