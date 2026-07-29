@@ -56,6 +56,21 @@ This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **
 Once the desktop is running, you can change the theme at any time:
 <pre><code>./theme.sh toggle    # switch between dark and light</code></pre>
 
+## Update
+To update everything (packages, scripts, and configuration) while preserving your settings:
+<pre><code>./update.sh
+</code></pre>
+<p>Options:</p>
+<ul>
+<li><strong>Full update</strong> — updates packages, syncs scripts, preserves config</li>
+<li><strong>Update packages only</strong> — runs <code>apt update && apt upgrade</code></li>
+<li><strong>Update scripts only</strong> — pulls latest scripts from repo</li>
+<li><strong>Backup/Restore</strong> — saves or restores your configuration</li>
+</ul>
+<p>To force a full update without prompts:</p>
+<pre><code>./update.sh force
+</code></pre>
+
 ## Exit from Termux GUI
 <pre>pkill Xvfb
 </pre>
