@@ -1,99 +1,233 @@
-# Termux-Desktop
-<b>This will help you to setup a Graphical Environment in termux using XFCE.</b>
-<b>Termux is an intractive application ion the android platform to run linux commands.</b>
-</br></br>After setting up all these things , you will see something like this.
+# TermDesk
 
-<a target="_blank" rel="noopener noreferrer" href="https://raw.githubusercontent.com/Juanoto2012/TermDesk/master/Images/Image-1.jpg"><img src="https://raw.githubusercontent.com/Juanoto2012/TermDesk/master/Images/Image-1.jpg" alt="Image-1" style="max-width:100%;"></a>
-</br>
-</br>
-<a target="_blank" rel="noopener noreferrer" href="https://raw.githubusercontent.com/Juanoto2012/TermDesk/master/Images/Image-2.jpg"><img src="https://raw.githubusercontent.com/Juanoto2012/TermDesk/master/Images/Image-2.jpg" alt="Image-2" style="max-width:100%;"></a>
+Run a full Linux desktop on any Android phone. Not a terminal. Not an emulator. A complete desktop environment with direct kernel access -- VS Code, Blender, Metasploit, local AI, all of it.
 
-# Desktop Theme
-This setup includes the **Fluent** GTK theme with **dark/light mode toggle**, **Mint-Y icon theme**, and **wallpapers** (wall 1 & wall 2).
+Connect your phone to a monitor and it becomes a Linux PC. Unplug it and your entire setup comes with you.
 
-## Theme Features
-- **Fluent GTK theme** (light + dark variants)
-- **Dark/Light mode toggle** — run `./theme.sh toggle` or use the interactive menu
-- **Mint-Y icon theme**
-- **Wallpapers** — wall-1.jpg (light mode) and wall-2.jpg (dark mode)
-- **Modern XFCE theme** — Dracula terminal, compositing, panel config, keyboard shortcuts
+> [!IMPORTANT]
+> TermDesk is an independent GPL-3.0 open-source project that incorporates
+> modified Termux:X11 components. It is not affiliated with or endorsed by
+> Termux, Termux:X11, TUR, Canonical, or Ubuntu.
+>
+> - **Source and licenses:** <https://github.com/Juanoto2012/TermDesk>
+> - **Termux:X11 upstream:** <https://github.com/termux/termux-x11>
 
-## Theme Commands
-- `./theme.sh` — interactive menu for theme setup
-- `./theme.sh full` — install everything (Fluent theme, icons, wallpapers, apply light theme, modern theme)
-- `./theme.sh light` — apply Fluent light theme with wall 1
-- `./theme.sh dark` — apply Fluent dark theme with wall 2
-- `./theme.sh toggle` — switch between dark and light mode
-- `./theme.sh install-fluent [light|dark]` — install Fluent theme variant
-- `./theme.sh install-icons` — install mint-y-icon-theme
-- `./theme.sh wallpapers` — copy wallpapers to the wallpapers directory
-- `./theme.sh 8` — apply modern XFCE theme (Dracula terminal + compositing + keyboard shortcuts)
+## Video
 
-## GPU Acceleration
-The setup includes smart GPU detection and acceleration:
-- **Adreno GPUs** — Turnip (Vulkan) driver for hardware-accelerated rendering
-- **Other GPUs** — Zink (OpenGL over Vulkan) fallback
-- **Mesa Zink** — OpenGL support via Vulkan
-- **Vulkan Loader** — Vulkan API support
+[![Watch the video](https://img.youtube.com/vi/QCr4WWsfVv8/maxresdefault.jpg)](https://youtu.be/QCr4WWsfVv8)
 
-## Proot Linux Container
-Optional Proot container support for running a full Linux distribution alongside Termux:
-- **Ubuntu** (default) — full desktop environment with GPU passthrough
-- **Proot App Bridge** — apt-installed apps appear in the XFCE menu
-- **Wallpaper download** — fetches wallpaper from URL with gradient fallback
+## What This Actually Runs
 
-## How to Install
-- <code>apt update</code>
-- <code>apt install git -y</code>
-- <code>git clone https://github.com/Juanoto2012/TermDesk.git</code>
-- <code>cd TermDesk</code>
-- <code>chmod +x gui.sh theme.sh</code>
-- <code>./gui.sh</code>
+Everything below has been tested and confirmed working:
 
-## Single Command Installation
-<pre><code>apt update && apt install git -y && git clone https://github.com/Juanoto2012/TermDesk && cd TermDesk && chmod +x gui.sh theme.sh && ./gui.sh</code></pre>
+- **LibreOffice** -- Word processing, spreadsheets, presentations. Fully functional.
+- **VS Code** -- Full version. Python, PIP, extensions, everything.
+- **Claude Code** -- AI coding agent running directly in terminal.
+- **Blender** -- Installs and opens. Laggy on mobile hardware, but it runs.
+- **Wireshark** -- Full network analysis, every packet and protocol.
+- **Metasploit** -- Pentesting framework, runs fine.
+- **Local AI** -- Offline LLM inference, 5+ tokens/second, no API needed.
 
-## How to Start Termux Desktop Mode
-<pre><code>start-x11.sh
-</code></pre>
-<p>This starts Termux-X11, sets up audio, and launches XFCE with the Fluent theme. Requires the <a href="https://play.google.com/store/apps/details?id=com.termux.x11">Termux-X11</a> app installed on your Android device.</p>
+If it runs on Ubuntu, it runs here.
 
-<p>Pre-installed apps: <strong>Firefox</strong>, <strong>galculator</strong>, <strong>parole</strong>, <strong>gpicview</strong>.</p>
+## How It Works
 
-<p>X11 provides hardware acceleration and better performance compared to VNC.</p>
+The Linux environment runs through Termux with direct access to the phone's kernel. No emulation, no translation -- native performance.
 
-## Exit Desktop
-<pre><code>stop-linux.sh
-</code></pre>
-<p>This kills Termux-X11 and all desktop processes.</p>
+The setup script installs a full desktop (XFCE4/LXQt/MATE/KDE) inside Termux using the Termux User Repository (TUR) for GUI apps. For tools not available in TUR (Wireshark, Metasploit, etc.), a Proot container provides a standard Ubuntu/Debian/Kali environment where you install anything with `apt`.
 
-## Changing Theme After Setup
-Once the desktop is running, you can change the theme at any time:
-<pre><code>./theme.sh toggle    # switch between dark and light</code></pre>
+The automatic menu sync scans what you install inside Proot and adds it directly to your desktop app menu. No need to enter the container every time.
 
-## Update
-To update everything (packages, scripts, and configuration) while preserving your settings:
-<pre><code>./update.sh
-</code></pre>
-<p>Options:</p>
-<ul>
-<li><strong>Full update</strong> — updates packages, syncs scripts, preserves config</li>
-<li><strong>Update packages only</strong> — runs <code>apt update && apt upgrade</code></li>
-<li><strong>Update scripts only</strong> — pulls latest scripts from repo</li>
-<li><strong>Backup/Restore</strong> — saves or restores your configuration</li>
-</ul>
-<p>To force a full update without prompts:</p>
-<pre><code>./update.sh force
-</code></pre>
+TermDesk adds a modern Fluent theme with dark/light toggle, Mint-Y icon theme, and custom wallpapers on top of DroidDesk's core functionality.
 
-## Exit Desktop
-<pre><code>stop-linux.sh
-</code></pre>
-<p>This kills Termux-X11 and all desktop processes.</p>
-</br>
-# Follow me on 
-<a href="https://github.com/techpanther22"><img src="https://camo.githubusercontent.com/6db5a07d93819ee616798a5448d0b1c1746f6b45/68747470733a2f2f6564656e742e6769746875622e696f2f537570657254696e7949636f6e732f696d616765732f706e672f6769746875622e706e67" alt="Github" width="50px"></a>
-<a href="https://www.instagram.com/techpanther22/"><img src="https://camo.githubusercontent.com/68ff38b86f01b428567dcc406116e23728245f4e/68747470733a2f2f6564656e742e6769746875622e696f2f537570657254696e7949636f6e732f696d616765732f7376672f696e7374616772616d2e737667" alt="Instagram" width="50px"></a>
-<a href="https://www.youtube.com/techpanther"><img src="https://camo.githubusercontent.com/0f31a4f7adb78461ca03dfaad4a138eedf0d14e0/68747470733a2f2f6564656e742e6769746875622e696f2f537570657254696e7949636f6e732f696d616765732f7376672f696e7374616772616d2e737667" alt="Youtube" width="50px"></a>
-<a href="https://www.facebook.com/techpanther22"><img src="https://camo.githubusercontent.com/e6d2040c65e8c6f4da10db72436cf9a1196e43ae/68747470733a2f2f6564656e742e6769746875622e696f2f537570657254696e7949636f6e732f696d616765732f7376672f66616365626f6f6b2e737667" alt="Facebook" width="50px"></a>
-<a href="https://techpanther.in"><img src="https://camo.githubusercontent.com/f04204907e15a5b57cacd62b46bd7eaddf481713/68747470733a2f2f6564656e742e6769746875622e696f2f537570657254696e7949636f6e732f696d616765732f7376672f626c6f676765722e737667" alt="Webbsite" width="50px"></a>
+## DroidDesk App (Standalone)
+
+TermDesk is also available as a standalone Android application that completely automates this process without requiring a separate Termux installation. It renders through an embedded Termux:X11 server running in its own Android process; the app does not use VNC.
+
+- **Rooted phones:** Run the Ubuntu filesystem through `chroot`.
+- **Non-rooted phones:** Run an app-private native Termux userspace and install desktop packages from the X11 and TUR repositories. PRoot is not used.
+- **Rendering:** Both modes connect directly to the embedded X11 server on `DISPLAY=:0`. Adreno devices use Turnip/Zink hardware acceleration when available; other GPUs fall back to Mesa software rendering.
+- **Automated setup:** The app extracts the bundled ARM64 Termux bootstrap, configures its private package prefix, and installs the selected desktop automatically.
+
+Download the latest release APK from the Releases tab and sideload it to begin.
+
+## Requirements
+
+- Any Android phone (ARM64)
+- [Termux](https://f-droid.org/en/packages/com.termux/) (install from F-Droid, not Play Store)
+- [Termux-X11](https://github.com/termux/termux-x11/releases/tag/nightly) (for on-phone display)
+
+### For Monitor Output ( Optional )
+
+**Option A: USB-C Display Output**
+
+If your phone supports display output over USB-C, just use a USB-C to HDMI adapter. Done.
+
+**Option B: Raspberry Pi Bridge**
+
+For phones without display output (most mid-range phones with USB 2.0), use a Raspberry Pi Zero 2W as a bridge:
+- Raspberry Pi Zero 2W with Raspberry Pi OS
+- Micro USB to USB-C cable
+- USB-C hub
+- Micro HDMI to HDMI adapter
+- SD card with Pi firmware
+- Wireless keyboard and mouse
+
+The Pi connects to the phone via USB tethering, detects the phone's IP automatically, and opens a VNC viewer to display the phone's desktop on the monitor.
+
+## Installation
+
+### Step 1: Install Termux
+
+Download and install Termux from F-Droid:
+https://f-droid.org/en/packages/com.termux/
+
+Do NOT use the Play Store version. It is outdated and will not work.
+
+### Step 2: Install Termux-X11
+
+Download the latest APK from:
+https://github.com/termux/termux-x11/releases/tag/nightly
+
+Install it on your phone. This is the display server that renders the desktop.
+
+### Step 3: Run the Setup Script
+
+Open Termux and run:
+
+```bash
+bash termux-linux-setup.sh
+```
+
+The script will:
+1. Update Termux packages
+2. Add X11 and TUR repositories
+3. Install your chosen desktop environment (XFCE4/LXQt/MATE/KDE)
+4. Set up GPU acceleration (Turnip for Adreno, Zink fallback for others)
+5. Install Firefox, Git, Python, and core tools
+6. Set up a Proot Linux container (Ubuntu/Debian/Kali)
+7. Create the App Bridge for automatic menu syncing
+8. Apply a modern dark theme
+9. Optionally set up VNC for remote access
+
+### Step 4: Start the Desktop
+
+After installation completes:
+
+```bash
+bash ~/start-x11.sh
+```
+
+Then open the Termux-X11 app on your phone. Your desktop is ready.
+
+### Step 5: Install Apps Inside Proot
+
+To install tools that are not in TUR:
+
+```bash
+bash ~/start-proot.sh
+apt install wireshark    # or any other package
+exit
+bash ~/proot-menu-sync.sh
+```
+
+The app will appear in your desktop menu automatically.
+
+## Raspberry Pi Monitor Bridge Setup
+
+If you are using a Raspberry Pi Zero 2W to output to a monitor:
+
+### Step 1: Flash Raspberry Pi OS
+
+Flash standard Raspberry Pi OS to an SD card and boot the Pi.
+
+### Step 2: Install VNC Viewer on the Pi
+
+```bash
+sudo apt update
+sudo apt install realvnc-vnc-viewer
+```
+
+### Step 3: Copy the Launcher Script
+
+Copy `pi-launch_phone.sh` to your Pi:
+
+```bash
+curl -sL https://raw.githubusercontent.com/Juanoto2012/TermDesk/main/pi-launch_phone.sh -o ~/pi-launch_phone.sh
+chmod +x ~/pi-launch_phone.sh
+```
+
+### Step 4: Connect and Launch
+
+1. Connect the phone to the Pi via USB cable
+2. Enable USB Tethering on the phone
+3. Start VNC on the phone: `bash ~/start-vnc.sh` (in Termux)
+4. Run the bridge script on the Pi:
+
+```bash
+bash ~/pi-launch_phone.sh
+```
+
+The script auto-detects the phone's IP and opens a fullscreen VNC session on the monitor.
+
+### Optional: Auto-Launch on Boot
+
+To make the Pi automatically connect when powered on, add to crontab:
+
+```bash
+crontab -e
+```
+
+Add this line:
+
+```
+@reboot sleep 15 && /home/pi/pi-launch_phone.sh
+```
+
+## Commands Reference
+
+| Command | What It Does |
+|---|---|
+| `bash ~/start-x11.sh` | Start desktop via Termux-X11 |
+| `bash ~/start-vnc.sh` | Start desktop via VNC (if installed) |
+| `bash ~/start-proot.sh` | Open Proot Linux shell |
+| `bash ~/proot-menu-sync.sh` | Sync Proot apps to desktop menu |
+| `bash ~/stop-linux.sh` | Stop all sessions |
+
+## Notes
+
+> [!WARNING]
+> **Disable Child Process in Developer Options**
+> On some Android versions (MIUI, One UI, stock Android 13+), the system may kill Termux background processes and drop your desktop session. To prevent this:
+> 1. Go to **Settings → Developer Options**
+> 2. Find **"Child process"** (may be labeled differently depending on your ROM)
+> 3. Disable child process restrictions for Termux
+>
+> Without this, long-running sessions (VNC, Termux-X11) may be killed by the OS without warning.
+
+- Termux-X11 directly on the phone is faster than VNC. Use VNC only when you need monitor output through the Pi bridge or remote access from another device.
+- For standalone phone use without a monitor, Termux-X11 is the recommended option.
+- The Proot container shares the display with the native Termux desktop. Apps installed in Proot render on the same screen.
+- GPU acceleration works best on Adreno GPUs (Qualcomm Snapdragon phones). Other GPUs fall back to software rendering.
+
+## Credits
+
+Based on DroidDesk by [orailnoor](https://youtube.com/@orailnoor), modified and maintained by [Juanoto2012](https://github.com/Juanoto2012).
+
+## License and third-party software
+
+TermDesk is independent software licensed under
+[GNU GPL version 3 only](LICENSE). It is not affiliated with or endorsed by
+Termux, Termux:X11, TUR, Canonical, Ubuntu, or other upstream projects.
+
+The Android application incorporates GPL-licensed Termux:X11 components and
+bundles other third-party software under their respective licenses. See:
+
+- [Notices and attribution](NOTICE.md)
+- [Third-party software inventory](THIRD_PARTY_NOTICES.md)
+- [Release compliance status](COMPLIANCE.md)
+
+The current compliance checklist includes unresolved source provenance,
+reproducible-build, custom-prefix bootstrap, and wallpaper-license work. Do not
+describe a binary release as fully compliant until the blocking checklist items
+are complete.
